@@ -1,0 +1,10 @@
+tuple  is unmutable array.
+Predefined  scala classes in spark :
+Tuple2<TypeA , TypeB> - Typle of 2  types
+Tuple22<TypeA,...TypeZ> - Typle for 22 types
+
+Flat mapping  - when one source corresponds to multiple or none results.One input value - zero or more output values.
+Mapping is because Spark will map source value and flat because zero or multiple results will be put in one flat collection.
+
+Filter - take out elements which we do not need. Filter contract , if we return true  for the element , it stays in RDD ,
+if we return false for the element  - it will be discarded.
