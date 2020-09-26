@@ -8,3 +8,53 @@ Mapping is because Spark will map source value and flat because zero or multiple
 
 Filter - take out elements which we do not need. Filter contract , if we return true  for the element , it stays in RDD ,
 if we return false for the element  - it will be discarded.
+
+Rdd.forEach spawns separate thread to go through partition of data. So , in case it does println , and
+data inside partitions was sorted, you will not see data in sorted order, because each thread with
+foreach , gets its time to out to stdout randomly.
+
+Coalesce
+After performing many transformations and actions on multi terabyte multi partition RDD,
+we have now reached the point where we only have a small amount of data .
+For remaining transformations , there is not point in continuing across 1000 partitions - any shuffles
+will be pointlessly expensive. Coalesce is just a way of reducing the number of partitions -
+it is never needed just to give the right answer.
+
+Collect
+Collect() is generally used when you have finished and you want to gather a small RDD onto the driver node
+ for example, printing.  Only call it you are sure that RDD will fit into a single JVMs RAM
+ If the result is still big , it is better write to a (for instance HDFS) file.
+
+ EMR (Elastic Map Reduce ) - amazons implementation hadoop in a cloud.
+
+ Job output :
+ [Stage 0:==========>   (8 + 8) /46]
+ 46 - number of partitions of data to process  46x64(default size of partition ) - gives total size of data processed
+ 8 + 8 , 16 + 8 , 24 + 8 ... 40 + 6 - tasks completed  + tasks currently running
+
+ While working with JavaRDD types , SPark does not do any work , it just builds execution plan(Transformations). Only when it comes to
+ deliver Java type result like  List, spark starts to do calculations(Action).
+ Final operation  that will make calculations happen are called - Action and they will result in concrete java Object.
+
+ Directed Acyclic Graph - Webui for Spark - means Graph that has no loops inside it.
+
+ While running the Job Spark runs web server on  port 4040 where it publishes the progress.
+If you block execution with Scanner.nextLine()  you`ll be able to get to console at localhost:4040/jobs
+
+partition - chunk of data. Code executed towards partition is a Task.
+If task is sent to partition and it can be completed without  changing the partition (like filter(), maptoPair operation) - it is called narrow transformation.
+If operation requires to move data around the partitions, like groupByKey() , then it is Wide transformation . Because,
+grouping by key will require to move similar key data to be located one next to each other , which will require partition movement.
+
+During transformations , all data can possible be moved to one partition  due to  key simmilarity. In order to
+resolve this , "salting" of key is  being used.  This means to add to key like "WARN" some random number , making X keys
+like WARN1 WARN2 ...  This will fore data to became scattered across different partitions again.
+
+Avoid groupByKey.... It can be always replaced with more performant analog.
+
+Grouping strategies
+Spark can use two algorythms for grouping
+SortAggregate - will sort the rows with some sorting algo  and then gather together the matching rows
+HashAggregate -
+
+

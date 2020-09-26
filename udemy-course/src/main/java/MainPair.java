@@ -18,6 +18,7 @@ public class MainPair {
         inputData.add("ERROR: Friday 7 September 1854");
         inputData.add("WARN: Saturday 8 September 1942");
 
+
         SparkConf conf = new SparkConf().setAppName("startingspark").setMaster("local[*]");
         JavaSparkContext sc = new JavaSparkContext(conf);
 //        JavaRDD<String> originalMessages = sc.parallelize(inputData);
